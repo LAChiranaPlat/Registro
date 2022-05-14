@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Registro">
         <activity
+            android:name=".EditUser"
+            android:exported="false" />
+        <activity
+            android:name=".LstUsuarios"
+            android:exported="false" />
+        <activity
             android:name=".frmRegistro"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

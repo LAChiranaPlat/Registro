@@ -5,12 +5,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import com.example.registro.databinding.ActivityFrmRegistroBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class frmRegistro : AppCompatActivity() {
 
     lateinit var views:ActivityFrmRegistroBinding
+    var nick:EditText?=null
+    var name:EditText?=null
+    var lname:EditText?=null
+     var id:EditText?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,10 +26,12 @@ class frmRegistro : AppCompatActivity() {
 
         setContentView(views.root)
 
-        val nick=views.tilUser.editText
-        val name=views.tilName.editText
-        val lname=views.tilLname.editText
-        val id=views.tilNID.editText
+        val db = Firebase.firestore
+
+        nick=views.tilUser.editText
+         name=views.tilName.editText
+         lname=views.tilLname.editText
+         id=views.tilNID.editText
 
         views.btnCancelar.setOnClickListener {
             finish()
@@ -30,7 +39,7 @@ class frmRegistro : AppCompatActivity() {
 
         views.btnGuardar.setOnClickListener {
 
-            if(vacios(nick!!,name!!,lname!!,id!!))//true/false
+           if(vacios(nick!!,name!!,lname!!,id!!))//true/false
             {
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Error de Ingreso de Datos")
@@ -42,15 +51,26 @@ class frmRegistro : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            startActivity(
-                Intent(this,details::class.java).apply {
-                    putExtra("nick",nick.text.toString())
-                    putExtra("name",name.text.toString())
-                    putExtra("lname",lname.text.toString())
-                    putExtra("idUser",id.text.toString())
-
-                }
+            /*CONEXION FIREBASE: */
+            // Create a new user with a first and last name
+            val newUser = hashMapOf(
+                "Nombres" to name!!.text.toString(),
+                "Apellidos" to lname!!.text.toString(),
+                "Nick" to nick!!.text.toString(),
+                "ID" to id!!.text.toString()
             )
+
+        // Add a new document with a generated ID
+            db.collection("Usuarios")
+                .add(newUser)
+                .addOnSuccessListener { documentReference ->
+
+                    _clear()
+                    Toast.makeText(this,"Usuario Ingresado",Toast.LENGTH_LONG).show()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("result", "Error en Inserción de Datos: ", e)
+                }
 
 
         }
@@ -73,5 +93,14 @@ class frmRegistro : AppCompatActivity() {
 
         return false
 
+    }
+
+    fun _clear(){
+        nick!!.text.clear()
+        name!!.text.clear()
+        lname!!.text.clear()
+        id!!.text.clear()
+
+        nick!!.requestFocus()
     }
 }

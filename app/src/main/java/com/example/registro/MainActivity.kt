@@ -19,5 +19,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, frmRegistro::class.java))
         }
 
+        layout.list.setOnClickListener {
+            startActivity(Intent(this, LstUsuarios::class.java))
+        }
+
     }
 }
