@@ -21,14 +21,18 @@ class LstUsuarios : AppCompatActivity() {
 
         setContentView(layout.root)
 
+/**/
         val db = Firebase.firestore
-
+/**/
         val recycler=layout.lista
         val search=layout.txtSearch
 
         recycler.layoutManager=LinearLayoutManager(this)
+
+/**/
         val listaUser:ArrayList<Users> = ArrayList()
         var adapter:myAdapter?=null
+/**/
 
         /**/
         db.collection("Usuarios")
@@ -37,8 +41,8 @@ class LstUsuarios : AppCompatActivity() {
             .addOnSuccessListener { result ->
 
                 for (document in result) {
-                    Log.i("result", "${document.data.get("Nombres")}, ${document.data.get("Apellidos")}: ${document.data.get("Nick")} ")
-                    listaUser.add(Users(document.data.get("Nick").toString(),"${document.data.get("Nombres")}, ${document.data.get("Apellidos")}"))
+                    Log.i("result", "${document.data.get("Nombres")}, ${document.data.get("Apellidos")}: ${document.data.get("Nick")} : [ID] ${ document.id }")
+                    listaUser.add(Users(document.data.get("Nick").toString(),"${document.data.get("Nombres")}, ${document.data.get("Apellidos")}",document.id.toString()))
                 }
 
                 adapter=myAdapter(listaUser)

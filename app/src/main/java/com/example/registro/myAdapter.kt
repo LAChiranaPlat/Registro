@@ -10,14 +10,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.registro.databinding.ItemsTemplateBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class myAdapter(var usuarios:ArrayList<Users>):RecyclerView.Adapter<myAdapter.ViewHolder>() {
 
     lateinit var ctx:Context
     private var lstOriginal:ArrayList<Users> = ArrayList()
+    val db:FirebaseFirestore
 
     init {
         lstOriginal.addAll(usuarios)
+         db = Firebase.firestore
     }
 
     class ViewHolder(view:ItemsTemplateBinding):RecyclerView.ViewHolder(view.root) {
@@ -37,7 +42,9 @@ class myAdapter(var usuarios:ArrayList<Users>):RecyclerView.Adapter<myAdapter.Vi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myAdapter.ViewHolder {
+
         ctx=parent.context
+
 
         val views=ItemsTemplateBinding.inflate(LayoutInflater.from(ctx),parent,false)
         return ViewHolder(views)
@@ -45,6 +52,8 @@ class myAdapter(var usuarios:ArrayList<Users>):RecyclerView.Adapter<myAdapter.Vi
     }
 
     override fun onBindViewHolder(holder: myAdapter.ViewHolder, position: Int) {
+
+
         val item=usuarios.get(position)
 
         holder.apply {
@@ -61,6 +70,13 @@ class myAdapter(var usuarios:ArrayList<Users>):RecyclerView.Adapter<myAdapter.Vi
                     .setTitle("Eliminando Usuarios")
                     .setMessage("Esta seguro de Eliminar a: ${nick.text.toString()}")
                     .setPositiveButton("OK"){d,w->
+
+                        db.collection("Usuarios").document(item.nameDocument)
+
+                            .delete()
+                            .addOnSuccessListener { Log.i("result", "Se elimino el registro") }
+                            .addOnFailureListener { e -> Log.i("result", "Error al eliminar", e) }
+
                         usuarios.removeAt(position)
                         notifyDataSetChanged()
                     }.show()
